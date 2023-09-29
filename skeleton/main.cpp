@@ -9,6 +9,8 @@
 #include "callbacks.hpp"
 #include "Particle.h"
 
+#include <list>	
+
 #include <iostream>
 
 std::string display_text = "This is a test";
@@ -30,7 +32,9 @@ PxPvd*                  gPvd        = NULL;
 PxDefaultCpuDispatcher*	gDispatcher = NULL;
 PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
-Particle* sParticle = NULL;
+
+
+std::list<Particle*> particleList;
 
 
 // Initialize physics engine
@@ -59,7 +63,7 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	sParticle = new Particle(PxVec3(0.0f, 0.0f, 0.0f), PxVec3(1, 0, 0).getNormalized(), 10);
+	//sParticle = new Particle(PxVec3(0.0f, 0.0f, 0.0f), PxVec3(0, 0, 0).getNormalized(), 10, PxVec3(0, 0, 0), 5);
 }
 
 
@@ -73,7 +77,19 @@ void stepPhysics(bool interactive, double t)
 	gScene->simulate(t);
 	gScene->fetchResults(true);
 
-	sParticle->moveConstVel(t);
+	auto it = particleList.begin();
+	while (!particleList.empty() && it != particleList.end()) {
+		auto aux = it;
+		++aux;
+
+		(*it)->integrate(t);
+
+		if ((*it)->getPos().y < -30) {
+			delete* it;
+			particleList.remove(*it);
+		}
+		it = aux;
+	}
 }
 
 // Function to clean data
@@ -93,7 +109,10 @@ void cleanupPhysics(bool interactive)
 	
 	gFoundation->release();
 
-	delete sParticle;
+	for (auto it = particleList.begin(); it != particleList.end(); ++it) {
+		delete *it;
+	}
+	
 }
 
 // Function called when a key is pressed
@@ -103,8 +122,11 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch(toupper(key))
 	{
-	//case 'B': break;
-	//case ' ':	break;
+	case 'B': {
+		Particle* p = new Particle(GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5);
+		particleList.push_back(p);
+		break;
+	}	
 	case ' ':
 	{
 		break;
