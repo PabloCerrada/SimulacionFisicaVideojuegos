@@ -109,10 +109,14 @@ void cleanupPhysics(bool interactive)
 	
 	gFoundation->release();
 
-	for (auto it = particleList.begin(); it != particleList.end(); ++it) {
-		delete *it;
-	}
-	
+	auto it = particleList.begin();
+	while (!particleList.empty() && it != particleList.end()) {
+		auto aux = it;
+		++aux;
+		delete* it;
+		particleList.remove(*it);
+		it = aux;
+	}	
 }
 
 // Function called when a key is pressed
