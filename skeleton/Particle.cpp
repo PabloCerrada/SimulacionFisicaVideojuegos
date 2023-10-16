@@ -2,16 +2,15 @@
 #include <ctype.h>
 #include "foundation/PxMat33.h"
 
-using namespace physx;
-
-Particle::Particle(const PxVec3& pos, const PxVec3& dir, const PxVec3&	acel, float masa_)
+Particle::Particle(const PxVec3& pos, const PxVec3& dir, const PxVec3&	acel, float masa_, float tam_) : time(0)
 {
 	mPos = pos;
 	mDir = dir;
 	mAcel = acel;
 	masa = masa_;
+	tam = tam_;
 	mTrans = new PxTransform(mPos);
-	renderItem = new RenderItem(CreateShape(PxSphereGeometry(2)), mTrans, Vector4(255, 0, 0, 1));
+	renderItem = new RenderItem(CreateShape(PxSphereGeometry(tam)), mTrans, Vector4(255, 0, 0, 1));
 }
 
 Particle::~Particle()
@@ -34,9 +33,14 @@ void Particle::setPos(PxVec3 newPos) {
 }
 
 void Particle::integrate(double t) { // MRU 
+	time += t;
 	mTrans->p += mDir * t;
 	mDir += mAcel * t;
 	mDir *= pow(DAMPING, t);
+}
+
+float Particle::getTime() {
+	return time;
 }
 
 //void Particle::moveConstVel(double t) { // MRU 

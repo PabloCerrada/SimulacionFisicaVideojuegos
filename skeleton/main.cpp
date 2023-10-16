@@ -7,7 +7,7 @@
 #include "core.hpp"
 #include "RenderUtils.hpp"
 #include "callbacks.hpp"
-#include "Particle.h"
+#include "ParticleGenerator.h"
 
 #include <list>	
 
@@ -35,6 +35,7 @@ ContactReportCallback gContactReportCallback;
 
 
 std::list<Particle*> particleList;
+ParticleGenerator* gen = nullptr;
 
 
 // Initialize physics engine
@@ -90,6 +91,8 @@ void stepPhysics(bool interactive, double t)
 		}
 		it = aux;
 	}
+
+	if (gen != nullptr) gen->integrate(t);
 }
 
 // Function to clean data
@@ -127,12 +130,13 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	switch(toupper(key))
 	{
 	case 'B': {
-		Particle* p = new Particle(GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5);
+		Particle* p = new Particle(GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5);
 		particleList.push_back(p);
 		break;
 	}	
-	case ' ':
+	case 'V':
 	{
+		if (gen == nullptr) gen = new ParticleGenerator(GetCamera()->getEye() + GetCamera()->getDir().getNormalized() * 100);
 		break;
 	}
 	default:
