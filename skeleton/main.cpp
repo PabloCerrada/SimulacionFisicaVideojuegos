@@ -9,6 +9,7 @@
 #include "callbacks.hpp"
 #include "SimpleParticleGenerator.h"
 #include "ParticleSystem.h"
+#include "Firework.h"
 #include <list>	
 
 #include <iostream>
@@ -105,14 +106,19 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	switch(toupper(key))
 	{
 	case 'B': {
-		Particle* p = new Particle(GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5);
+		Particle* p = new Particle(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5);
 		particleSys->addParticle(p);
 		break;
 	}	
 	case 'V':
 	{
-		SimpleParticleGenerator* gen = new SimpleParticleGenerator(GetCamera()->getEye() + GetCamera()->getDir().getNormalized() * 100);
+		SimpleParticleGenerator* gen = new SimpleParticleGenerator(particleSys, GetCamera()->getEye() + GetCamera()->getDir().getNormalized() * 100);
 		particleSys->addGenerator(gen);
+		break;
+	}
+	case 'G': {
+		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5);
+		particleSys->addParticle(f);
 		break;
 	}
 	default:

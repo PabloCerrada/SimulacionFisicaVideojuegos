@@ -1,9 +1,10 @@
 #pragma once
 #include "RenderUtils.hpp"
-#include "Particle.h"
-#include "ParticleGenerator.h"
+
 #include <list>
 using namespace std;
+class Particle;
+class ParticleGenerator;
 class ParticleSystem
 {
 private:

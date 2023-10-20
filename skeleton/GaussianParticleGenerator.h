@@ -1,6 +1,6 @@
 #pragma once
 #include "ParticleGenerator.h"
-class SimpleParticleGenerator : public ParticleGenerator
+class GaussianParticleGenerator : public ParticleGenerator
 {
 private:
 	random_device dVel;
@@ -9,9 +9,9 @@ private:
 	mt19937 genDir;
 	uniform_real_distribution<double> _randomVel{ 0, 100 };
 	uniform_real_distribution<double> _randomDir{ -1, 1 };
-public: 
-	SimpleParticleGenerator(ParticleSystem* pS, const PxVec3& pos);
-	virtual ~SimpleParticleGenerator();
+public:
+	GaussianParticleGenerator(ParticleSystem* pS, const PxVec3& pos);
+	virtual ~GaussianParticleGenerator();
 	virtual void integrate(double t);
 };
 

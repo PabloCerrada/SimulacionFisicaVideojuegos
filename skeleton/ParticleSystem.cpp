@@ -1,4 +1,6 @@
 #include "ParticleSystem.h"
+#include "ParticleGenerator.h"
+#include "Particle.h"
 ParticleSystem::ParticleSystem() {
 
 }
@@ -9,7 +11,7 @@ ParticleSystem::~ParticleSystem() {
 		auto aux = it;
 		++aux;
 		delete* it;
-		particleList.remove(*it);
+		particleList.erase(it);
 		it = aux;
 	}
 }
@@ -30,9 +32,9 @@ void ParticleSystem::update(double t) {
 
 		(*it)->integrate(t);
 
-		if ((*it)->getPos().y < -30) {
+		if ((*it)->getPos().y < -100 || (*it)->getDeath()) {
 			delete* it;
-			particleList.remove(*it);
+			particleList.erase(it);
 		}
 		it = aux;
 	}
@@ -42,6 +44,7 @@ void ParticleSystem::update(double t) {
 		auto aux = it2;
 		++aux;
 		(*it2)->integrate(t);
+		if ((*it2)->getDeath()) generatorList.erase(it2);
 		it2 = aux;
 	}
 }
