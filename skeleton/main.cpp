@@ -7,8 +7,8 @@
 #include "core.hpp"
 #include "RenderUtils.hpp"
 #include "callbacks.hpp"
-#include "ParticleGenerator.h"
-
+#include "SimpleParticleGenerator.h"
+#include "ParticleSystem.h"
 #include <list>	
 
 #include <iostream>
@@ -33,9 +33,7 @@ PxDefaultCpuDispatcher*	gDispatcher = NULL;
 PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 
-
-std::list<Particle*> particleList;
-ParticleGenerator* gen = nullptr;
+ParticleSystem* particleSys = nullptr;
 
 
 // Initialize physics engine
@@ -64,7 +62,7 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	//sParticle = new Particle(PxVec3(0.0f, 0.0f, 0.0f), PxVec3(0, 0, 0).getNormalized(), 10, PxVec3(0, 0, 0), 5);
+	particleSys = new ParticleSystem();
 }
 
 
@@ -78,21 +76,7 @@ void stepPhysics(bool interactive, double t)
 	gScene->simulate(t);
 	gScene->fetchResults(true);
 
-	auto it = particleList.begin();
-	while (!particleList.empty() && it != particleList.end()) {
-		auto aux = it;
-		++aux;
-
-		(*it)->integrate(t);
-
-		if ((*it)->getPos().y < -30) {
-			delete* it;
-			particleList.remove(*it);
-		}
-		it = aux;
-	}
-
-	if (gen != nullptr) gen->integrate(t);
+	particleSys->update(t);
 }
 
 // Function to clean data
@@ -111,15 +95,6 @@ void cleanupPhysics(bool interactive)
 	transport->release();
 	
 	gFoundation->release();
-
-	auto it = particleList.begin();
-	while (!particleList.empty() && it != particleList.end()) {
-		auto aux = it;
-		++aux;
-		delete* it;
-		particleList.remove(*it);
-		it = aux;
-	}	
 }
 
 // Function called when a key is pressed
@@ -131,12 +106,13 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	{
 	case 'B': {
 		Particle* p = new Particle(GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5);
-		particleList.push_back(p);
+		particleSys->addParticle(p);
 		break;
 	}	
 	case 'V':
 	{
-		if (gen == nullptr) gen = new ParticleGenerator(GetCamera()->getEye() + GetCamera()->getDir().getNormalized() * 100);
+		SimpleParticleGenerator* gen = new SimpleParticleGenerator(GetCamera()->getEye() + GetCamera()->getDir().getNormalized() * 100);
+		particleSys->addGenerator(gen);
 		break;
 	}
 	default:

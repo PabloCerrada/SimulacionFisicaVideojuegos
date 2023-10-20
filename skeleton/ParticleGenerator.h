@@ -2,20 +2,22 @@
 #include "RenderUtils.hpp"
 #include "Particle.h"
 #include <list>
+#include <random>
 using namespace std;
 
 class ParticleGenerator
 {
 private:
+	
+protected:
 	physx::PxVec3	mPos;
-	RenderItem* renderItem;
 	physx::PxTransform* mTrans;
-	list<Particle*> genParticleList;
 	float timeOfLife;
+	list<Particle*> genParticleList;
 public:
-	ParticleGenerator(const PxVec3& pos);
+	ParticleGenerator();
 	~ParticleGenerator();
 
-	void integrate(double t);
+	virtual void integrate(double t);
 };
 
