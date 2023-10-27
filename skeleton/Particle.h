@@ -9,7 +9,7 @@ const float DAMPING = 0.998;
 class Particle
 {
 public:
-	Particle(ParticleSystem* pS, const physx::PxVec3& pos, const physx::PxVec3& dir, const physx::PxVec3& acel, float masa_, float tam_);
+	Particle(ParticleSystem* pS, const physx::PxVec3& pos, const physx::PxVec3& dir, const physx::PxVec3& acel, float masa_, float tam_, Vector4 color);
 	~Particle();
 
 	physx::PxVec3	getPos()	const;

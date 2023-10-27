@@ -14,7 +14,8 @@ SimpleParticleGenerator::~SimpleParticleGenerator() {
 
 void SimpleParticleGenerator::integrate(double t) {
 	ParticleGenerator::integrate(t);
-	Particle* p = new Particle(particleSys, mPos, PxVec3(_randomDir(genDir), _randomDir(genDir), _randomDir(genDir)) * 20, PxVec3(0, -9.8, 0), 5, 0.5);
+	Vector4 v((rand() % 100) / 100.0f, (rand() % 100) / 100.0f, (rand() % 100) / 100.0f, 1);
+	Particle* p = new Particle(particleSys, mPos, PxVec3(_randomDir(genDir), _randomDir(genDir), _randomDir(genDir)) * _randomVel(genVel), PxVec3(0, -9.8, 0), 5, 0.5, v);
 	particleSys->addParticle(p);
 
 	if (timeOfLife < time) {

@@ -3,14 +3,15 @@
 class GaussianParticleGenerator : public ParticleGenerator
 {
 private:
+	int id;
 	random_device dVel;
 	random_device dDir;
 	mt19937 genVel;
 	mt19937 genDir;
 	uniform_real_distribution<double> _randomVel{ 0, 100 };
-	uniform_real_distribution<double> _randomDir{ -1, 1 };
+	normal_distribution<double> _randomDir{ 0, 1 };
 public:
-	GaussianParticleGenerator(ParticleSystem* pS, const PxVec3& pos);
+	GaussianParticleGenerator(ParticleSystem* pS, const PxVec3& pos, int id_);
 	virtual ~GaussianParticleGenerator();
 	virtual void integrate(double t);
 };

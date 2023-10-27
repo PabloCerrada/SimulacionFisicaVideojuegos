@@ -105,19 +105,34 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch(toupper(key))
 	{
-	case 'B': {
-		Particle* p = new Particle(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5);
+	case 'B': { // Disparo normal
+		Particle* p = new Particle(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(1, 0, 0, 1));
 		particleSys->addParticle(p);
 		break;
 	}	
-	case 'V':
+	case 'V': // Generador
 	{
 		SimpleParticleGenerator* gen = new SimpleParticleGenerator(particleSys, GetCamera()->getEye() + GetCamera()->getDir().getNormalized() * 100);
 		particleSys->addGenerator(gen);
 		break;
 	}
-	case 'G': {
-		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5);
+	case 'G': { // Fuego artificial uniforme
+		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(1, 0, 0, 1), 0);
+		particleSys->addParticle(f);
+		break;
+	}
+	case 'H': { // Fuego artificial gaussiano
+		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(0, 1, 0, 1), 1);
+		particleSys->addParticle(f);
+		break;
+	}
+	case 'J': { // Fuego artificial gaussiano con paleta rosada
+		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(0, 0, 1, 1), 2);
+		particleSys->addParticle(f);
+		break;
+	}
+	case 'K': { // Fuego artificial gaussiano con paleta rosada
+		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(0, 0, 1, 1), 3);
 		particleSys->addParticle(f);
 		break;
 	}
