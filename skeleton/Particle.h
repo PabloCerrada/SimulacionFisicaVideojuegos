@@ -22,17 +22,26 @@ public:
 	float getTime();
 
 	bool getDeath();
-	/*void moveConstVel(double t);
-	void moveAcelVel(double t);
-	void verticalShoot(double t);*/
+
+	// Clears accumulated force
+	void clearForce();
+	// Add force to apply in next integration only
+	void addForce(Vector3 f);
+
+	bool update(double delta_t);
+	
 protected:
 	bool death = false;
 	float tam, time;
-	float masa;
+	float masa, invMasa;
 	physx::PxVec3	mDir;
 	physx::PxVec3	mAcel;
 	RenderItem* renderItem;
 	physx::PxTransform* mTrans;
 	ParticleSystem* particleSys;
+
+	// Accumulated force
+	Vector3 force;
+	
 };
 

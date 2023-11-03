@@ -8,6 +8,9 @@ Particle::Particle(ParticleSystem* pS, const PxVec3& pos, const PxVec3& dir, con
 	mDir = dir;
 	mAcel = acel;
 	masa = masa_;
+	if (masa != 0) {
+		invMasa = 1 / masa;
+	}
 	tam = tam_;
 	mTrans = new PxTransform(pos);
 	renderItem = new RenderItem(CreateShape(PxSphereGeometry(tam)), mTrans, color);
@@ -33,6 +36,7 @@ void Particle::setPos(PxVec3 newPos) {
 }
 
 void Particle::integrate(double t) { // MRU 
+	update(t);
 	time += t;
 	mTrans->p += mDir * t;
 	mDir += mAcel * t;
@@ -47,18 +51,22 @@ bool Particle::getDeath() {
 	return death;
 }
 
-//void Particle::moveConstVel(double t) { // MRU 
-//	mTrans->p = mTrans->p + mDir * vel * t;
-//}
-//
-//void Particle::moveAcelVel(double t) { // MRUA
-//	mTrans->p += mDir * vel * t;
-//	mDir += mAcel * t;
-//	mDir *= pow(DAMPING, t);
-//}
-//
-//void Particle::verticalShoot(double t) { // MRUA
-//	mTrans->p += mDir * t - (1 / 2) * mGrav * pow(t, 2);
-//	mDir += mGrav * t;
-//	mDir *= pow(DAMPING, t);
-//} // Cosas mias
+void Particle::addForce(Vector3 f) {
+	force += f;
+}
+
+void Particle::clearForce() {
+	force *= 0;
+}
+
+bool Particle::update(double delta_t) {
+	// Semi-implicit Euler algorithm
+	// Get the accel considering the force accum
+	Vector3 resulting_accel = force * invMasa;
+	mDir += resulting_accel * delta_t; // Ex. 1.3 --> add acceleration
+	mDir *= powf(DAMPING, delta_t); // Exercise 1.3 --> adddamping
+	mTrans->p += mDir * delta_t;
+	// Clear accum
+	clearForce();
+}
+
