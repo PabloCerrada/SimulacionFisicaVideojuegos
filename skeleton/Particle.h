@@ -29,11 +29,15 @@ public:
 	void addForce(Vector3 f);
 
 	bool update(double delta_t);
+
+	inline float getInvMass() { return invMasa; }
+	inline float getMass() { return masa; }
 	
 protected:
 	bool death = false;
 	float tam, time;
 	float masa, invMasa;
+	float timeOfLife = 3;
 	physx::PxVec3	mDir;
 	physx::PxVec3	mAcel;
 	RenderItem* renderItem;
@@ -42,6 +46,6 @@ protected:
 
 	// Accumulated force
 	Vector3 force;
-	
+	float _remaining_time = 0;
 };
 

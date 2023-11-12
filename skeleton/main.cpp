@@ -10,6 +10,8 @@
 #include "SimpleParticleGenerator.h"
 #include "ParticleSystem.h"
 #include "Firework.h"
+#include "ParticleForceRegistry.h"
+#include "GravityForceGenerator.h"
 #include <list>	
 
 #include <iostream>
@@ -35,6 +37,8 @@ PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 
 ParticleSystem* particleSys = nullptr;
+
+ParticleForceRegistry* registering = nullptr;
 
 
 // Initialize physics engine
@@ -63,7 +67,9 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	particleSys = new ParticleSystem();
+	
+	registering = new ParticleForceRegistry();
+	particleSys = new ParticleSystem(registering);
 }
 
 
@@ -78,6 +84,7 @@ void stepPhysics(bool interactive, double t)
 	gScene->fetchResults(true);
 
 	particleSys->update(t);
+	registering->updateForces(t);
 }
 
 // Function to clean data
@@ -108,32 +115,36 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	case 'B': { // Disparo normal
 		Particle* p = new Particle(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(1, 0, 0, 1));
 		particleSys->addParticle(p);
+		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
+		registering->addRegistry(fg, p);
 		break;
 	}	
-	case 'V': // Generador
-	{
-		SimpleParticleGenerator* gen = new SimpleParticleGenerator(particleSys, GetCamera()->getEye() + GetCamera()->getDir().getNormalized() * 100);
-		particleSys->addGenerator(gen);
-		break;
-	}
 	case 'G': { // Fuego artificial uniforme
-		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(1, 0, 0, 1), 0);
+		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(1, 0, 0, 1), 0, registering);
 		particleSys->addParticle(f);
+		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
+		registering->addRegistry(fg, f);
 		break;
 	}
 	case 'H': { // Fuego artificial gaussiano
-		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(0, 1, 0, 1), 1);
+		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(0, 1, 0, 1), 1, registering);
 		particleSys->addParticle(f);
+		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
+		registering->addRegistry(fg, f);
 		break;
 	}
 	case 'J': { // Fuego artificial gaussiano con paleta rosada
-		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(0, 0, 1, 1), 2);
+		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(0, 0, 1, 1), 2, registering);
 		particleSys->addParticle(f);
+		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
+		registering->addRegistry(fg, f);
 		break;
 	}
-	case 'K': { // Fuego artificial gaussiano con paleta rosada
-		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(0, 0, 1, 1), 3);
+	case 'K': { // Hacia la derecha
+		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(0, 0, 1, 1), 3, registering);
 		particleSys->addParticle(f);
+		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
+		registering->addRegistry(fg, f);
 		break;
 	}
 	default:

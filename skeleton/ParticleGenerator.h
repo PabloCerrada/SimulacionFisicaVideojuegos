@@ -4,6 +4,8 @@
 #include <list>
 #include <random>
 #include "ParticleSystem.h"
+#include "ParticleForceRegistry.h"
+#include "GravityForceGenerator.h"
 using namespace std;
 
 class ParticleGenerator
@@ -11,6 +13,7 @@ class ParticleGenerator
 private:
 	
 protected:
+	ParticleForceRegistry* registering;
 	ParticleSystem* particleSys;
 	physx::PxVec3	mPos;
 	physx::PxTransform* mTrans;

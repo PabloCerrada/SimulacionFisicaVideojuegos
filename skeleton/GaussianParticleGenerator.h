@@ -11,7 +11,7 @@ private:
 	uniform_real_distribution<double> _randomVel{ 0, 100 };
 	normal_distribution<double> _randomDir{ 0, 1 };
 public:
-	GaussianParticleGenerator(ParticleSystem* pS, const PxVec3& pos, int id_);
+	GaussianParticleGenerator(ParticleSystem* pS, const PxVec3& pos, int id_, ParticleForceRegistry* registering_);
 	virtual ~GaussianParticleGenerator();
 	virtual void integrate(double t);
 };

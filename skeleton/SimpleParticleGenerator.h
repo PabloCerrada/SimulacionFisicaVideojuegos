@@ -10,7 +10,7 @@ private:
 	uniform_real_distribution<double> _randomVel{ 0, 100 };
 	uniform_real_distribution<double> _randomDir{ -1, 1 };
 public: 
-	SimpleParticleGenerator(ParticleSystem* pS, const PxVec3& pos);
+	SimpleParticleGenerator(ParticleSystem* pS, const PxVec3& pos, ParticleForceRegistry* registering_);
 	virtual ~SimpleParticleGenerator();
 	virtual void integrate(double t);
 };

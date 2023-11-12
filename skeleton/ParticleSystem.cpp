@@ -1,8 +1,9 @@
 #include "ParticleSystem.h"
 #include "ParticleGenerator.h"
+#include "ParticleForceRegistry.h"
 #include "Particle.h"
-ParticleSystem::ParticleSystem() {
-
+ParticleSystem::ParticleSystem(ParticleForceRegistry* registering_) {
+	registering = registering_;
 }
 
 ParticleSystem::~ParticleSystem() {
@@ -33,6 +34,7 @@ void ParticleSystem::update(double t) {
 		(*it)->integrate(t);
 
 		if ((*it)->getPos().y < -100 || (*it)->getDeath()) {
+			registering->deleteParticleRegistry(*it);
 			delete* it;
 			particleList.erase(it);
 		}
