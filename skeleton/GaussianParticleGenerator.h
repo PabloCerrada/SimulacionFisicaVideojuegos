@@ -2,6 +2,7 @@
 #include "ParticleGenerator.h"
 #include "ParticleDragGenerator.h"
 #include "TorbellinoGenerator.h"
+#include "ExplosionGenerator.h"
 class GaussianParticleGenerator : public ParticleGenerator
 {
 private:
