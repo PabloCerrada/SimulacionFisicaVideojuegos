@@ -10,7 +10,7 @@ void Firework::integrate(double t) {
 	if (timeToExplode < time) {
 		ParticleGenerator* gen;
 		if (id == 0) gen = new SimpleParticleGenerator(particleSys, getPos(), registering);
-		else if (id == 1 || id == 2 || id == 3) gen = new GaussianParticleGenerator(particleSys, getPos(), id, registering);
+		else if (id == 1 || id == 2 || id == 3 || id == 4) gen = new GaussianParticleGenerator(particleSys, getPos(), id, registering);
 		particleSys->addGenerator(gen);
 		death = true;
 	}

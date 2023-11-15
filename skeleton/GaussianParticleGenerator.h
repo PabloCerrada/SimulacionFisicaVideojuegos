@@ -1,5 +1,7 @@
 #pragma once
 #include "ParticleGenerator.h"
+#include "ParticleDragGenerator.h"
+#include "TorbellinoGenerator.h"
 class GaussianParticleGenerator : public ParticleGenerator
 {
 private:

@@ -9,7 +9,7 @@ Particle::Particle(ParticleSystem* pS, const PxVec3& pos, const PxVec3& dir, con
 	mAcel = acel;
 	masa = masa_;
 	if (masa != 0) {
-		invMasa = 1 / masa;
+		invMasa = 1.0 / masa;
 	}
 	tam = tam_;
 	force = { 0, 0, 0 };

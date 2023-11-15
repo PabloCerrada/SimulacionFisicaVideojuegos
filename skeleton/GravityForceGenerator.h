@@ -8,7 +8,7 @@ private:
 	Vector3 gravity_;
 public:
 	GravityForceGenerator(const Vector3& g);
-
+	virtual ~GravityForceGenerator();
 	virtual void updateForce(Particle* particle, double duration);
 
 	inline void setGravity(Vector3 g) { gravity_ = g; }

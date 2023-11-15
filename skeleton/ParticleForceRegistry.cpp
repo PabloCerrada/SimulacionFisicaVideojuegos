@@ -13,6 +13,7 @@ void ParticleForceRegistry::deleteParticleRegistry(Particle* p) {
     auto it = begin();
     while (it != end()) {
         if (it->second == p) {
+            delete(it->first);
             it = erase(it); // Elimina el elemento y devuelve el siguiente iterador válido
         }
         else {

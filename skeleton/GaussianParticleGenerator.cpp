@@ -30,6 +30,17 @@ void GaussianParticleGenerator::integrate(double t) {
 		particleSys->addParticle(p);
 		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
 		registering->addRegistry(fg, p);
+		ParticleDragGenerator* pdg = new ParticleDragGenerator(10, 0);
+		registering->addRegistry(pdg, p);
+	}
+	else if (id == 4) {
+		v = { (rand() % 100) / 100.0f, (rand() % 100) / 100.0f, (rand() % 100) / 100.0f, 1 };
+		Particle* p = new Particle(particleSys, mPos, PxVec3(1, 0, 0) * _randomVel(genVel), PxVec3(0, -9.8, 0), 5, 0.5, v);
+		particleSys->addParticle(p);
+		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
+		registering->addRegistry(fg, p);
+		TorbellinoGenerator* tg = new TorbellinoGenerator(30);
+		registering->addRegistry(tg, p);
 	}
 	else {
 		v = { (rand() % 100) / 100.0f, (rand() % 100) / 100.0f, (rand() % 100) / 100.0f, 1 };

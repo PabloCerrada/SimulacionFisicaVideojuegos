@@ -11,6 +11,7 @@ ParticleSystem::~ParticleSystem() {
 	while (!particleList.empty() && it != particleList.end()) {
 		auto aux = it;
 		++aux;
+		registering->deleteParticleRegistry(*it);
 		delete* it;
 		particleList.erase(it);
 		it = aux;
