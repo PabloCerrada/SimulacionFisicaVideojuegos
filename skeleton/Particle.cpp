@@ -55,7 +55,6 @@ bool Particle::getDeath() {
 
 void Particle::addForce(Vector3 f) {
 	force += f;
-	cout << f.x << " " << f.y << " "<< f.z << endl;
 }
 
 void Particle::clearForce() {

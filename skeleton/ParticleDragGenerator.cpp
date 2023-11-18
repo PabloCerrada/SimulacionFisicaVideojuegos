@@ -20,7 +20,6 @@ void ParticleDragGenerator::updateForce(Particle* particle, double t) {
 		particle->getPos().z > mTrans->p.z - width.halfExtents.z &&
 		particle->getPos().z < mTrans->p.z + width.halfExtents.z;
 	if (inside) {
-		cout << "in" << endl;
 		Vector3 dir = particle->getDir();
 		float drag_coef = dir.normalize();
 		Vector3 dragF;
@@ -34,7 +33,5 @@ void ParticleDragGenerator::updateForce(Particle* particle, double t) {
 	//Vector3 dragF;
 	//drag_coef = k1 * drag_coef + k2 * drag_coef * drag_coef;
 	//dragF = -dir * drag_coef;
-
-	////cout << dragF.x << "\t" << dragF.y << "\t" << dragF.z << endl;
 	//particle->addForce(dragF);
 }

@@ -32,6 +32,7 @@ public:
 
 	inline float getInvMass() { return invMasa; }
 	inline float getMass() { return masa; }
+	inline void setTimeOfLife(float newLife) { timeOfLife = newLife; }
 	
 protected:
 	bool death = false;

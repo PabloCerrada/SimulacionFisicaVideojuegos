@@ -22,6 +22,7 @@
     <ClCompile Include="ParticleDragGenerator.cpp" />
     <ClCompile Include="TorbellinoGenerator.cpp" />
     <ClCompile Include="ExplosionGenerator.cpp" />
+    <ClCompile Include="ParticulasAleatorias.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -45,6 +46,7 @@
     <ClInclude Include="ParticleDragGenerator.h" />
     <ClInclude Include="TorbellinoGenerator.h" />
     <ClInclude Include="ExplosionGenerator.h" />
+    <ClInclude Include="ParticulasAleatorias.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">
