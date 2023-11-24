@@ -17,5 +17,6 @@ public:
 	void addParticle(Particle* p);
 	void addGenerator(ParticleGenerator* gen);
 	void update(double t);
+	void generateSpringDemo();
 };
 

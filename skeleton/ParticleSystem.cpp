@@ -1,6 +1,7 @@
 #include "ParticleSystem.h"
 #include "ParticleGenerator.h"
 #include "ParticleForceRegistry.h"
+#include "SpringForceGenerator.h"
 #include "Particle.h"
 ParticleSystem::ParticleSystem(ParticleForceRegistry* registering_) {
 	registering = registering_;
@@ -50,4 +51,16 @@ void ParticleSystem::update(double t) {
 		if ((*it2)->getDeath()) generatorList.erase(it2);
 		it2 = aux;
 	}
+}
+
+void ParticleSystem::generateSpringDemo() {
+	// First one standard spring uniting 2 particles
+	Particle* p1 = new Particle(this, { -10, 10, 0 }, { 0,0,0 }, { 0,0,0 }, 1, 3, Vector4(1, 0, 0, 1));
+	addParticle(p1);
+	Particle* p2 = new Particle(this, { 10, 10, 0 }, { 0,0,0 }, { 0,0,0 }, 2, 6, Vector4(1, 0, 0, 1));
+	addParticle(p2);
+	SpringForceGenerator* f1 = new SpringForceGenerator(1, 10, p2);
+	registering->addRegistry(f1, p1);
+	SpringForceGenerator* f2 = new SpringForceGenerator(1, 10, p1);
+	registering->addRegistry(f2, p2);
 }

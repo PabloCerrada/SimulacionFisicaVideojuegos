@@ -23,6 +23,8 @@
     <ClCompile Include="TorbellinoGenerator.cpp" />
     <ClCompile Include="ExplosionGenerator.cpp" />
     <ClCompile Include="ParticulasAleatorias.cpp" />
+    <ClCompile Include="SpringForceGenerator.cpp" />
+    <ClCompile Include="AnchoredSpringFG.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -47,6 +49,8 @@
     <ClInclude Include="TorbellinoGenerator.h" />
     <ClInclude Include="ExplosionGenerator.h" />
     <ClInclude Include="ParticulasAleatorias.h" />
+    <ClInclude Include="SpringForceGenerator.h" />
+    <ClInclude Include="AnchoredSpringFG.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">
