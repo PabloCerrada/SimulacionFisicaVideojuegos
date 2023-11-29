@@ -2,6 +2,7 @@
 #include "ParticleGenerator.h"
 #include "ParticleForceRegistry.h"
 #include "SpringForceGenerator.h"
+#include "AnchoredSpringFG.h"
 #include "Particle.h"
 ParticleSystem::ParticleSystem(ParticleForceRegistry* registering_) {
 	registering = registering_;
@@ -63,4 +64,11 @@ void ParticleSystem::generateSpringDemo() {
 	registering->addRegistry(f1, p1);
 	SpringForceGenerator* f2 = new SpringForceGenerator(1, 10, p1);
 	registering->addRegistry(f2, p2);
+}
+
+void ParticleSystem::generateSpringAnchoredDemo() {
+	Particle* p3 = new Particle(this, { -10, 20,0 }, { 0,0,0 }, { 0,0,0 }, 3, 9, Vector4(1, 0, 0, 1));
+	addParticle(p3);
+	AnchoredSpringFG* f3 = new AnchoredSpringFG(1, 10, { 10, 20, 0 }, this);
+	registering->addRegistry(f3, p3);
 }

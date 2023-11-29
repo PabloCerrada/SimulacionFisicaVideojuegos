@@ -10,6 +10,7 @@ public:
 	SpringForceGenerator(double k_, double resting_length_, Particle* other_);
 	virtual void updateForce(Particle* particle, double t);
 	inline void setK(double k_) { k = k_; }
+	inline double getK() { return k; }
 	virtual ~SpringForceGenerator() {}
 };
 

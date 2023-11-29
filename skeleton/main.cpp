@@ -16,6 +16,9 @@
 #include "TorbellinoGenerator.h"
 #include "ExplosionGenerator.h"
 #include "ParticulasAleatorias.h"
+#include "AnchoredSpringFG.h"
+#include "GomaElastica.h"
+#include "BuoyancyForceGenerator.h"
 #include <list>	
 
 #include <iostream>
@@ -41,7 +44,9 @@ PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 
 ParticleForceRegistry* registering = nullptr;
-
+ParticleSystem* particleSys = nullptr;
+AnchoredSpringFG* as = nullptr;
+Particle* pMuelle = nullptr;
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -181,6 +186,61 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	}
 	case 'F': { // DemoMuelles
 		particleSys->generateSpringDemo();
+		break;
+	}
+	case 'G': { // DemoMuelles
+		particleSys->generateSpringAnchoredDemo();
+		break;
+	}
+	case 'H': { // Muelle Estático
+		pMuelle = new Particle(particleSys, Vector3(0, 70, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 2, 3, Vector4(1, 0, 0, 1), 40);
+		particleSys->addParticle(pMuelle);
+		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
+		registering->addRegistry(fg, pMuelle);
+		as = new AnchoredSpringFG(50, 20, Vector3(30, 70, 0), particleSys);
+		registering->addRegistry(as, pMuelle);
+		break;
+	}
+	case 'J': { // Particulas unidas con muelle (GomaElastica)
+		// First one standard spring uniting 2 particles
+		Particle* p1 = new Particle(particleSys, { -20, 40, 0 }, { 0,0,0 }, { 0,0,0 }, 1, 3, Vector4(1, 0, 0, 1), 20);
+		particleSys->addParticle(p1);
+		Particle* p2 = new Particle(particleSys, { 20, 40, 0 }, { 0,0,0 }, { 0,0,0 }, 1, 3, Vector4(1, 1, 0, 1), 20);
+		particleSys->addParticle(p2);
+		GomaElastica* f1 = new GomaElastica(5, 0, p2, 5);
+		registering->addRegistry(f1, p1);
+		GravityForceGenerator* gfg1 = new GravityForceGenerator(Vector3(0, -9.8, 0));
+		registering->addRegistry(gfg1, p1);
+		GomaElastica* f2 = new GomaElastica(5, 0, p1, 5);
+		registering->addRegistry(f2, p2);
+		GravityForceGenerator* gfg2 = new GravityForceGenerator(Vector3(0, -9.8, 0));
+		registering->addRegistry(gfg2, p2);
+		ParticleDragGenerator* pdg1 = new ParticleDragGenerator(10, 0);
+		registering->addRegistry(pdg1, p1);
+		break;
+	}
+	case 'K': { // Flotacion
+		Particle* p = new Particle(particleSys, { 0, 10, 0 }, { 0,0,0 }, { 0,0,0 }, 5, 3, Vector4(1, 0, 0, 1), 20, BOX, {3, 5, 3});
+		particleSys->addParticle(p);
+		GravityForceGenerator* gfg = new GravityForceGenerator(Vector3(0, -9.8, 0));
+		registering->addRegistry(gfg, p);
+		BuoyancyForceGenerator* bfg = new BuoyancyForceGenerator(0, 20, 1, particleSys);
+		registering->addRegistry(bfg, p);
+		break;
+	}
+	case 'B': { // Viento afecta a la particula del muelle estático
+		if (pMuelle != nullptr) {
+			ParticleDragGenerator* pdg = new ParticleDragGenerator(10, 0);
+			registering->addRegistry(pdg, pMuelle);
+		}
+		break;
+	}
+	case 'N': { // Resta variable K del muelle estático
+		if (as != nullptr) as->setK(as->getK() - 1);
+		break;
+	}
+	case 'M': { // Suma variable K del muelle estático
+		if (as != nullptr) as->setK(as->getK() + 1);
 		break;
 	}
 	default:

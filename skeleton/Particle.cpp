@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include "foundation/PxMat33.h"
 
-Particle::Particle(ParticleSystem* pS, const PxVec3& pos, const PxVec3& dir, const PxVec3&	acel, float masa_, float tam_, Vector4 color) : time(0)
+Particle::Particle(ParticleSystem* pS, const PxVec3& pos, const PxVec3& dir, const PxVec3&	acel, float masa_, float tam_, Vector4 color, float tim, FORMA f, Vector3 dimF) : time(0)
 {
 	particleSys = pS;
 	mDir = dir;
@@ -12,9 +12,22 @@ Particle::Particle(ParticleSystem* pS, const PxVec3& pos, const PxVec3& dir, con
 		invMasa = 1.0 / masa;
 	}
 	tam = tam_;
+	timeOfLife = tim;
+	forma = f;
 	force = { 0, 0, 0 };
 	mTrans = new PxTransform(pos);
-	renderItem = new RenderItem(CreateShape(PxSphereGeometry(tam)), mTrans, color);
+	switch (forma)
+	{
+	case BOX:
+		renderItem = new RenderItem(CreateShape(PxBoxGeometry(dimF.x, dimF.y, dimF.z)), mTrans, color);
+		break;
+	case SPHERE:
+		renderItem = new RenderItem(CreateShape(PxSphereGeometry(tam)), mTrans, color);
+		break;
+	default:
+		break;
+	}
+	
 }
 
 Particle::~Particle()

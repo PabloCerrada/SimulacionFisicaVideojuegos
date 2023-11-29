@@ -18,5 +18,6 @@ public:
 	void addGenerator(ParticleGenerator* gen);
 	void update(double t);
 	void generateSpringDemo();
+	void generateSpringAnchoredDemo();
 };
 

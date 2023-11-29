@@ -6,10 +6,15 @@ using namespace physx;
 
 const float DAMPING = 0.998;
 
+enum FORMA {
+	BOX = 0,
+	SPHERE = 1
+};
+
 class Particle
 {
 public:
-	Particle(ParticleSystem* pS, const physx::PxVec3& pos, const physx::PxVec3& dir, const physx::PxVec3& acel, float masa_, float tam_, Vector4 color);
+	Particle(ParticleSystem* pS, const physx::PxVec3& pos, const physx::PxVec3& dir, const physx::PxVec3& acel, float masa_, float tam_, Vector4 color, float tim = 3, FORMA f = SPHERE, Vector3 dimF = {2, 2, 2});
 	~Particle();
 
 	physx::PxVec3	getPos()	const;
@@ -35,6 +40,7 @@ public:
 	inline void setTimeOfLife(float newLife) { timeOfLife = newLife; }
 	
 protected:
+	FORMA forma;
 	bool death = false;
 	float tam, time;
 	float masa, invMasa;
