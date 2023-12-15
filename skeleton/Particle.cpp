@@ -53,9 +53,6 @@ void Particle::integrate(double t) { // MRU
 	update(t);
 	time += t;
 	if (timeOfLife < time) death = true;
-	/*mTrans->p += mDir * t;
-	mDir += mAcel * t;
-	mDir *= pow(DAMPING, t);*/
 }
 
 float Particle::getTime() {

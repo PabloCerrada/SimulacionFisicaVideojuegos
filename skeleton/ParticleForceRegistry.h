@@ -12,6 +12,8 @@ public:
 
 	void addRegistry(ForceGenerator* fg, Particle* p);
 
+	void deleteRegistry(ForceGenerator* fg, Particle* p);
+
 	void deleteParticleRegistry(Particle* p);
 };
 

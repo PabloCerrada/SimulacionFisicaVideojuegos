@@ -19,6 +19,9 @@
 #include "AnchoredSpringFG.h"
 #include "GomaElastica.h"
 #include "BuoyancyForceGenerator.h"
+#include "RigidBodySystem.h"
+#include "RBForceRegistry.h"
+#include "WindSFG.h"
 #include <list>	
 
 #include <iostream>
@@ -45,6 +48,8 @@ ContactReportCallback gContactReportCallback;
 
 ParticleForceRegistry* registering = nullptr;
 ParticleSystem* particleSys = nullptr;
+RigidBodySystem* rigidBodySys = nullptr;
+RBForceRegistry* RBregistering = nullptr;
 AnchoredSpringFG* as = nullptr;
 Particle* pMuelle = nullptr;
 
@@ -74,9 +79,21 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	
 	registering = new ParticleForceRegistry();
 	particleSys = new ParticleSystem(registering);
+	RBregistering = new RBForceRegistry();
+	rigidBodySys = new RigidBodySystem(RBregistering);
+
+	// RigidBody estatico
+	PxRigidStatic* suelo = gPhysics->createRigidStatic(PxTransform({ 0,0,0 }));
+	PxShape* shape = CreateShape(PxBoxGeometry(100, 0.1, 100));
+	suelo->attachShape(*shape);
+	gScene->addActor(*suelo);
+
+	RenderItem* item = new RenderItem(shape, suelo, { 0.8, 0.8, 0.8, 1 });
+
+	RB* r = new RB(gPhysics, gScene, item, suelo);
+	rigidBodySys->addRB(r);
 }
 
 
@@ -91,7 +108,9 @@ void stepPhysics(bool interactive, double t)
 	gScene->fetchResults(true);
 
 	particleSys->update(t);
+	rigidBodySys->update(t);
 	registering->updateForces(t);
+	RBregistering->updateForces(t);
 }
 
 // Function to clean data
@@ -226,6 +245,63 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		registering->addRegistry(gfg, p);
 		BuoyancyForceGenerator* bfg = new BuoyancyForceGenerator(0, 20, 1, particleSys);
 		registering->addRegistry(bfg, p);
+		break;
+	}
+	case 'L': {
+		// Rigidbody dinamico
+		PxRigidDynamic* newSolid = gPhysics->createRigidDynamic(PxTransform({ -70,200,-70 }));
+		newSolid->setLinearVelocity({ 0,5,0 });
+		newSolid->setAngularVelocity({ 0,0,0 });
+		PxShape* newShape = CreateShape(PxBoxGeometry(5, 5, 5));
+		newSolid->attachShape(*newShape);
+		PxRigidBodyExt::updateMassAndInertia(*newSolid, 0.15);
+		gScene->addActor(*newSolid);
+
+		RenderItem* newItem = new RenderItem(newShape, newSolid, { 0, 0, 0, 1 });
+
+		RB* r2 = new RB(gPhysics, gScene, newItem, newSolid);
+		rigidBodySys->addRB(r2);
+		break;
+	}
+	case 'Z': { // Disparo RB normal con viento
+		// Rigidbody dinamico
+		PxRigidDynamic* newSolid = gPhysics->createRigidDynamic(PxTransform({ GetCamera()->getEye() }));
+		newSolid->setLinearVelocity(GetCamera()->getDir() * 70);
+		newSolid->setAngularVelocity({ 0,0,0 });
+		PxShape* newShape = CreateShape(PxCapsuleGeometry(2, 1));
+		newSolid->attachShape(*newShape);
+		PxRigidBodyExt::updateMassAndInertia(*newSolid, 0.15);
+		gScene->addActor(*newSolid);
+
+		RenderItem* newItem = new RenderItem(newShape, newSolid, { 0, 0, 0, 1 });
+
+		RB* r2 = new RB(gPhysics, gScene, newItem, newSolid);
+		rigidBodySys->addRB(r2);
+		WindSFG* wind = new WindSFG(10, 0);
+		RBregistering->addRegistry(wind, r2);
+		break;
+	}
+	case 'X': { // Disparo RB con Angular velocity, material y mas masa, y viento
+		// Rigidbody dinamico
+		PxRigidDynamic* newSolid = gPhysics->createRigidDynamic(PxTransform({ GetCamera()->getEye() }));
+		newSolid->setLinearVelocity(GetCamera()->getDir() * 70);
+		newSolid->setAngularVelocity({ 0,10,0 });
+
+		//PxMaterial* gMaterial = gPhysics->createMaterial(Cestatico, Cdinamico, Elastico);
+		PxMaterial* gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
+
+		PxShape* newShape = CreateShape(PxCapsuleGeometry(2, 1), gMaterial);
+		newSolid->attachShape(*newShape);
+		PxRigidBodyExt::updateMassAndInertia(*newSolid, 1);
+		gScene->addActor(*newSolid);
+
+		
+		RenderItem* newItem = new RenderItem(newShape, newSolid, { 0, 0, 0, 1 });
+
+		RB* r2 = new RB(gPhysics, gScene, newItem, newSolid);
+		rigidBodySys->addRB(r2);
+		WindSFG* wind = new WindSFG(10, 0);
+		RBregistering->addRegistry(wind, r2);
 		break;
 	}
 	case 'B': { // Viento afecta a la particula del muelle estático

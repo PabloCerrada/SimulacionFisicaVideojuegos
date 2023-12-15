@@ -9,6 +9,17 @@ void ParticleForceRegistry::addRegistry(ForceGenerator* fg, Particle* p) {
 	insert({fg, p});
 }
 
+void ParticleForceRegistry::deleteRegistry(ForceGenerator* fg, Particle* p) {
+    bool eliminado = false;
+    auto it = begin();
+    while (!eliminado && it != end()) {
+        if ((*it).second == p) {
+            erase(it);
+            eliminado = true;
+        }
+    }
+}
+
 void ParticleForceRegistry::deleteParticleRegistry(Particle* p) {
     auto it = begin();
     while (it != end()) {
