@@ -7,6 +7,7 @@ using namespace std;
 
 class RigidBodySystem {
 private:
+	bool victoria = false;
 	RBForceRegistry* registering;
 	std::list<RB*> rbList;
 	PxPhysics* gPhysics = nullptr;
@@ -20,7 +21,11 @@ public:
 	void addRB(RB* r);
 	void update(double t);
 	void createScenario();
-	void createStaticObject(Vector3 pos, int wx, int wy, int wz, Vector4 color);
-	void createDynamicObject();
+	void createStaticObject(Vector3 pos, int wx, int wy, int wz, Vector4 color, bool transparente);
+	void createDynamicObject(Vector3 pos, int wx, int wy, int wz, Vector4 color);
 	int getNPeluches();
+	float nRandom(int n1, int n2);
+
+	inline void setVictoria(bool newVic) { victoria = newVic; }
+	inline bool getVictoria() { return victoria; }
 };

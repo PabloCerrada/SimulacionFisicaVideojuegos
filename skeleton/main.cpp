@@ -30,6 +30,8 @@ std::string display_text = "La maquina regalajuguetes";
 
 std::string juguetes = "Juguetes restantes: 10";
 
+std::string felicitacion = "";
+
 
 using namespace physx;
 
@@ -56,69 +58,15 @@ RBForceRegistry* RBregistering = nullptr;
 Particle* pMuelle;
 AnchoredSpringFG* as;
 
-bool DEBUG = false;
-
-float nRandom(int n1, int n2) {
-	
-
-	// Calcular el rango de números posibles
-	int rango = n2 - n1 + 1;
-
-	// Generar un número aleatorio dentro del rango
-	return std::rand() % rango + n1;
-}
-
-void createStaticObjetcs() {
+void congratulations() {
+	int a = 10 - rigidBodySys->getNPeluches();
+	if (a != 1) felicitacion = "Has ganado " + to_string(a) + " juguetes";
+	else felicitacion = "Has ganado " + to_string(a) + " juguete";
 	
 }
-
-void createDynamicObjects() { // Limites caja (-100, + 100) en x (-600, -400) en z (-100 y -400 es la tronera)
-	// Rigidbody dinamico
-	
-}
-
-
-void createScenario() {
-	createStaticObjetcs();
-	createDynamicObjects();
-
-	
-}
-
 void updateText() {
 	int a = rigidBodySys->getNPeluches();
-	switch (a) {
-	case 9:
-		juguetes = "Juguetes restantes: 9";
-		break;
-	case 8:
-		juguetes = "Juguetes restantes: 8";
-		break;
-	case 7:
-		juguetes = "Juguetes restantes: 7";
-		break;
-	case 6:
-		juguetes = "Juguetes restantes: 6";
-		break;
-	case 5:
-		juguetes = "Juguetes restantes: 5";
-		break;
-	case 4:
-		juguetes = "Juguetes restantes: 4";
-		break;
-	case 3:
-		juguetes = "Juguetes restantes: 3";
-		break;
-	case 2:
-		juguetes = "Juguetes restantes: 2";
-		break;
-	case 1:
-		juguetes = "Juguetes restantes: 1";
-		break;
-	}
-
-	// No me salia bien si ponia juguetes = "Juguetes restante: " + a;
-	
+    juguetes = "Juguetes restantes: " + to_string(a);
 }
 
 // Initialize physics engine
@@ -151,7 +99,7 @@ void initPhysics(bool interactive)
 	std::srand(std::time(0));
 
 	RBregistering = new RBForceRegistry();
-	rigidBodySys = new RigidBodySystem(RBregistering);
+	rigidBodySys = new RigidBodySystem(RBregistering, gPhysics, gScene);
 	registering = new ParticleForceRegistry();
 	particleSys = new ParticleSystem(registering);
 
@@ -176,6 +124,11 @@ void stepPhysics(bool interactive, double t)
 	gScene->fetchResults(true);
 
 	rigidBodySys->update(t);
+	if (rigidBodySys->getVictoria()) {
+		congratulations();
+		updateText();
+		rigidBodySys->setVictoria(false);
+	}
 	RBregistering->updateForces(t);
 	particleSys->update(t);
 	registering->updateForces(t);

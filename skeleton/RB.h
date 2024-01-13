@@ -11,6 +11,7 @@ private:
 	float masa, invMasa; 
 	float timeOfLife = 3, time;
 	bool death = false;
+	bool dynamic;
 	// Accumulated force
 	Vector3 force;
 	physx::PxVec3	mDir;
@@ -20,11 +21,12 @@ private:
 	PxScene* gSceneRB = nullptr;
 	PxRigidStatic* staticRB = nullptr;
 	PxRigidDynamic* dynamicRB = nullptr;
+	PxShape* shape = nullptr;
 	RenderItem* rItem = nullptr;
 public:
-	RB(PxPhysics* gPhysics_, PxScene* gScene_, RenderItem* rItem_, PxRigidStatic* statico);
-	RB(PxPhysics* gPhysics_, PxScene* gScene_, RenderItem* rItem_, PxRigidDynamic* dynamico);
-	~RB() {};
+	RB(PxPhysics* gPhysics_, PxScene* gScene_, RenderItem* rItem_, PxRigidStatic* statico, PxShape* shape_);
+	RB(PxPhysics* gPhysics_, PxScene* gScene_, RenderItem* rItem_, PxRigidDynamic* dynamico, PxShape* shape_);
+	~RB();
 
 	void integrate(double t);
 
@@ -36,5 +38,8 @@ public:
 	float getInvMss();
 
 	Vector3 getDir();
+	Vector3 getPos();
+
+	bool getDynamic();
 };
 

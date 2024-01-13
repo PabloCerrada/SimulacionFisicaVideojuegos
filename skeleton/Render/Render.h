@@ -50,6 +50,7 @@
 extern std::string display_text;
 
 extern std::string juguetes;
+extern std::string felicitacion;
 
 namespace Snippets
 {
