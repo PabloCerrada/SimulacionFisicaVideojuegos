@@ -14,6 +14,7 @@ RB::RB(PxPhysics* gPhysics_, PxScene* gScene_, RenderItem* rItem_, PxRigidStatic
 }
 
 void RB::integrate(double t) {
+	//if (dynamicRB != nullptr) std::cout << dynamicRB->getGlobalPose().p.x << " " << dynamicRB->getGlobalPose().p.y << " " << dynamicRB->getGlobalPose().p.z << std::endl;
 	time += t;
 	if (timeOfLife < time) death = true;
 }
@@ -33,6 +34,7 @@ float RB::getInvMss() {
 	if (dynamicRB != nullptr) {
 		return dynamicRB->getInvMass();
 	}
+	else return 0;
 }
 
 Vector3 RB::getDir() {

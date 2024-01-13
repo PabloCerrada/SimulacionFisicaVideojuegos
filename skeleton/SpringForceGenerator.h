@@ -11,6 +11,7 @@ public:
 	virtual void updateForce(Particle* particle, double t);
 	inline void setK(double k_) { k = k_; }
 	inline double getK() { return k; }
+	inline Particle* getOther() { return other; }
 	virtual ~SpringForceGenerator() {}
 };
 

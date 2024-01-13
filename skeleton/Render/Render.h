@@ -49,6 +49,8 @@
 
 extern std::string display_text;
 
+extern std::string juguetes;
+
 namespace Snippets
 {
 void setupDefaultWindow(const char* name);

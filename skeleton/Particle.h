@@ -2,6 +2,7 @@
 #include "RenderUtils.hpp"
 #include "ParticleSystem.h"
 #include <iostream>
+#include <PxPhysicsAPI.h>
 using namespace physx;
 
 const float DAMPING = 0.998;
@@ -17,6 +18,7 @@ public:
 	Particle(ParticleSystem* pS, const physx::PxVec3& pos, const physx::PxVec3& dir, const physx::PxVec3& acel, float masa_, float tam_, Vector4 color, float tim = 3, FORMA f = SPHERE, Vector3 dimF = {2, 2, 2});
 	~Particle();
 
+	void setPos(Vector3 newPos) const;
 	physx::PxVec3	getPos()	const;
 	physx::PxVec3	getDir()	const;
 

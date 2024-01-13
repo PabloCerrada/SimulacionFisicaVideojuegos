@@ -41,6 +41,13 @@ PxVec3 Particle::getPos() const
 	return mTrans->p;
 }
 
+void Particle::setPos(Vector3 newPos) const
+{
+	mTrans->p.x = newPos.x;
+	mTrans->p.y = newPos.y;
+	mTrans->p.z = newPos.z;
+}
+
 PxVec3 Particle::getDir() const
 {
 	return mDir;
@@ -52,7 +59,7 @@ void Particle::setPos(PxVec3 newPos) {
 void Particle::integrate(double t) { // MRU 
 	update(t);
 	time += t;
-	if (timeOfLife < time) death = true;
+	if (timeOfLife < time && timeOfLife != -1) death = true;
 }
 
 float Particle::getTime() {

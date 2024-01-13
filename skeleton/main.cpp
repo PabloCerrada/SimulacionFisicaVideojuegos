@@ -26,7 +26,9 @@
 
 #include <iostream>
 
-std::string display_text = "This is a test";
+std::string display_text = "La maquina regalajuguetes";
+
+std::string juguetes = "Juguetes restantes: 10";
 
 
 using namespace physx;
@@ -50,8 +52,74 @@ ParticleForceRegistry* registering = nullptr;
 ParticleSystem* particleSys = nullptr;
 RigidBodySystem* rigidBodySys = nullptr;
 RBForceRegistry* RBregistering = nullptr;
-AnchoredSpringFG* as = nullptr;
-Particle* pMuelle = nullptr;
+
+Particle* pMuelle;
+AnchoredSpringFG* as;
+
+bool DEBUG = false;
+
+float nRandom(int n1, int n2) {
+	
+
+	// Calcular el rango de números posibles
+	int rango = n2 - n1 + 1;
+
+	// Generar un número aleatorio dentro del rango
+	return std::rand() % rango + n1;
+}
+
+void createStaticObjetcs() {
+	
+}
+
+void createDynamicObjects() { // Limites caja (-100, + 100) en x (-600, -400) en z (-100 y -400 es la tronera)
+	// Rigidbody dinamico
+	
+}
+
+
+void createScenario() {
+	createStaticObjetcs();
+	createDynamicObjects();
+
+	
+}
+
+void updateText() {
+	int a = rigidBodySys->getNPeluches();
+	switch (a) {
+	case 9:
+		juguetes = "Juguetes restantes: 9";
+		break;
+	case 8:
+		juguetes = "Juguetes restantes: 8";
+		break;
+	case 7:
+		juguetes = "Juguetes restantes: 7";
+		break;
+	case 6:
+		juguetes = "Juguetes restantes: 6";
+		break;
+	case 5:
+		juguetes = "Juguetes restantes: 5";
+		break;
+	case 4:
+		juguetes = "Juguetes restantes: 4";
+		break;
+	case 3:
+		juguetes = "Juguetes restantes: 3";
+		break;
+	case 2:
+		juguetes = "Juguetes restantes: 2";
+		break;
+	case 1:
+		juguetes = "Juguetes restantes: 1";
+		break;
+	}
+
+	// No me salia bien si ponia juguetes = "Juguetes restante: " + a;
+	
+}
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -79,21 +147,21 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	registering = new ParticleForceRegistry();
-	particleSys = new ParticleSystem(registering);
+	// Inicializar la semilla para obtener números realmente aleatorios
+	std::srand(std::time(0));
+
 	RBregistering = new RBForceRegistry();
 	rigidBodySys = new RigidBodySystem(RBregistering);
+	registering = new ParticleForceRegistry();
+	particleSys = new ParticleSystem(registering);
 
-	// RigidBody estatico
-	PxRigidStatic* suelo = gPhysics->createRigidStatic(PxTransform({ 0,0,0 }));
-	PxShape* shape = CreateShape(PxBoxGeometry(100, 0.1, 100));
-	suelo->attachShape(*shape);
-	gScene->addActor(*suelo);
-
-	RenderItem* item = new RenderItem(shape, suelo, { 0.8, 0.8, 0.8, 1 });
-
-	RB* r = new RB(gPhysics, gScene, item, suelo);
-	rigidBodySys->addRB(r);
+	rigidBodySys->createScenario();
+	// Iman
+	pMuelle = new Particle(particleSys, Vector3(0, 200, -500), Vector3(0, 0, 0), Vector3(0, 0, 0), 2, 3, Vector4(1, 0, 0, 1), -1, BOX, Vector3(20, 2, 20));
+	particleSys->addParticle(pMuelle);
+	as = new AnchoredSpringFG(0, 0, Vector3(0, 200, -500), particleSys);
+	registering->addRegistry(as, pMuelle);
+	
 }
 
 
@@ -107,10 +175,10 @@ void stepPhysics(bool interactive, double t)
 	gScene->simulate(t);
 	gScene->fetchResults(true);
 
-	particleSys->update(t);
 	rigidBodySys->update(t);
-	registering->updateForces(t);
 	RBregistering->updateForces(t);
+	particleSys->update(t);
+	registering->updateForces(t);
 }
 
 // Function to clean data
@@ -129,6 +197,8 @@ void cleanupPhysics(bool interactive)
 	transport->release();
 	
 	gFoundation->release();
+
+	delete rigidBodySys;
 }
 
 // Function called when a key is pressed
@@ -138,187 +208,28 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch(toupper(key))
 	{
-	case 'Q': { // Disparo normal
-		Particle* p = new Particle(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(1, 0, 0, 1));
-		particleSys->addParticle(p);
-		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
-		registering->addRegistry(fg, p);
-		ParticleDragGenerator* pdg = new ParticleDragGenerator(20, 0);
-		registering->addRegistry(pdg, p);
+	case 'T':
+		as->setGanchoPos(as->getGanchoPos() + Vector3(0, 0, -1));
+		pMuelle->setPos(pMuelle->getPos() + Vector3(0, 0, -1));
 		break;
-	}
-	case 'E': { // Disparo con viento hacia arriba masa 5
-		Particle* p = new Particle(particleSys, Vector3(-50, 20, 0), Vector3(1, 0, 0) * 50, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(1, 0, 0, 1));
-		particleSys->addParticle(p);
-		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
-		registering->addRegistry(fg, p);
-		ParticleDragGenerator* pdg = new ParticleDragGenerator(10, 0);
-		registering->addRegistry(pdg, p);
+	case 'G':
+		as->setGanchoPos(as->getGanchoPos() + Vector3(0, 0, 1));
+		pMuelle->setPos(pMuelle->getPos() + Vector3(0, 0, 1));
 		break;
-	}
-	case 'R': { // Disparo con viento hacia arriba masa 15
-		Particle* p = new Particle(particleSys, Vector3(-50, 20, 0), Vector3(1, 0, 0) * 50, PxVec3(0, -9.8, 0), 15, 3, Vector4(1, 0, 0, 1));
-		particleSys->addParticle(p);
-		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
-		registering->addRegistry(fg, p);
-		ParticleDragGenerator* pdg = new ParticleDragGenerator(10, 0);
-		registering->addRegistry(pdg, p);
+	case 'F':
+		as->setGanchoPos(as->getGanchoPos() + Vector3(-1, 0, 0));
+		pMuelle->setPos(pMuelle->getPos() + Vector3(-1, 0, 0));
 		break;
-	}
-	case 'T': { // Fuego artificial uniforme
-		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(1, 0, 0, 1), 0, registering);
-		particleSys->addParticle(f);
-		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
-		registering->addRegistry(fg, f);
+	case 'H':
+		as->setGanchoPos(as->getGanchoPos() + Vector3(1, 0, 0));
+		pMuelle->setPos(pMuelle->getPos() + Vector3(1, 0, 0));
 		break;
-	}
-	case 'Y': { // Fuego artificial gaussiano
-		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(0, 1, 0, 1), 1, registering);
-		particleSys->addParticle(f);
-		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
-		registering->addRegistry(fg, f);
+	case 'Q':
+		pMuelle->setPos(pMuelle->getPos() + Vector3(0, 1, 0));
 		break;
-	}
-	case 'U': { // Fuego artificial gaussiano con paleta rosada
-		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(0, 0, 1, 1), 2, registering);
-		particleSys->addParticle(f);
-		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
-		registering->addRegistry(fg, f);
+	case 'E':
+		pMuelle->setPos(pMuelle->getPos() + Vector3(0, -1, 0));
 		break;
-	}
-	case 'I': { // Hacia la derecha con viento hacia arriba
-		Firework* f = new Firework(particleSys, GetCamera()->getEye(), GetCamera()->getDir() * 100, PxVec3(0, -9.8, 0), 5, 1.5, Vector4(0, 0, 1, 1), 3, registering);
-		particleSys->addParticle(f);
-		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
-		registering->addRegistry(fg, f);
-		break;
-	}
-	case 'O': { // Torbellino
-		ParticulasAleatorias* pA = new ParticulasAleatorias(particleSys, registering);
-		pA->crearTorbellino();
-		break;
-	}
-	case 'P': { // Explosion
-		ParticulasAleatorias* pA = new ParticulasAleatorias(particleSys, registering);
-		pA->crearExplosion();
-		break;
-	}
-	case 'F': { // DemoMuelles
-		particleSys->generateSpringDemo();
-		break;
-	}
-	case 'G': { // DemoMuelles
-		particleSys->generateSpringAnchoredDemo();
-		break;
-	}
-	case 'H': { // Muelle Estático
-		pMuelle = new Particle(particleSys, Vector3(0, 70, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 2, 3, Vector4(1, 0, 0, 1), 40);
-		particleSys->addParticle(pMuelle);
-		GravityForceGenerator* fg = new GravityForceGenerator(Vector3(0, -9.8, 0));
-		registering->addRegistry(fg, pMuelle);
-		as = new AnchoredSpringFG(50, 20, Vector3(30, 70, 0), particleSys);
-		registering->addRegistry(as, pMuelle);
-		break;
-	}
-	case 'J': { // Particulas unidas con muelle (GomaElastica)
-		// First one standard spring uniting 2 particles
-		Particle* p1 = new Particle(particleSys, { -20, 40, 0 }, { 0,0,0 }, { 0,0,0 }, 1, 3, Vector4(1, 0, 0, 1), 20);
-		particleSys->addParticle(p1);
-		Particle* p2 = new Particle(particleSys, { 20, 40, 0 }, { 0,0,0 }, { 0,0,0 }, 1, 3, Vector4(1, 1, 0, 1), 20);
-		particleSys->addParticle(p2);
-		GomaElastica* f1 = new GomaElastica(5, 0, p2, 5);
-		registering->addRegistry(f1, p1);
-		GravityForceGenerator* gfg1 = new GravityForceGenerator(Vector3(0, -9.8, 0));
-		registering->addRegistry(gfg1, p1);
-		GomaElastica* f2 = new GomaElastica(5, 0, p1, 5);
-		registering->addRegistry(f2, p2);
-		GravityForceGenerator* gfg2 = new GravityForceGenerator(Vector3(0, -9.8, 0));
-		registering->addRegistry(gfg2, p2);
-		ParticleDragGenerator* pdg1 = new ParticleDragGenerator(10, 0);
-		registering->addRegistry(pdg1, p1);
-		break;
-	}
-	case 'K': { // Flotacion
-		Particle* p = new Particle(particleSys, { 0, 10, 0 }, { 0,0,0 }, { 0,0,0 }, 5, 3, Vector4(1, 0, 0, 1), 20, BOX, {3, 5, 3});
-		particleSys->addParticle(p);
-		GravityForceGenerator* gfg = new GravityForceGenerator(Vector3(0, -9.8, 0));
-		registering->addRegistry(gfg, p);
-		BuoyancyForceGenerator* bfg = new BuoyancyForceGenerator(0, 20, 1, particleSys);
-		registering->addRegistry(bfg, p);
-		break;
-	}
-	case 'L': {
-		// Rigidbody dinamico
-		PxRigidDynamic* newSolid = gPhysics->createRigidDynamic(PxTransform({ -70,200,-70 }));
-		newSolid->setLinearVelocity({ 0,5,0 });
-		newSolid->setAngularVelocity({ 0,0,0 });
-		PxShape* newShape = CreateShape(PxBoxGeometry(5, 5, 5));
-		newSolid->attachShape(*newShape);
-		PxRigidBodyExt::updateMassAndInertia(*newSolid, 0.15);
-		gScene->addActor(*newSolid);
-
-		RenderItem* newItem = new RenderItem(newShape, newSolid, { 0, 0, 0, 1 });
-
-		RB* r2 = new RB(gPhysics, gScene, newItem, newSolid);
-		rigidBodySys->addRB(r2);
-		break;
-	}
-	case 'Z': { // Disparo RB normal con viento
-		// Rigidbody dinamico
-		PxRigidDynamic* newSolid = gPhysics->createRigidDynamic(PxTransform({ GetCamera()->getEye() }));
-		newSolid->setLinearVelocity(GetCamera()->getDir() * 70);
-		newSolid->setAngularVelocity({ 0,0,0 });
-		PxShape* newShape = CreateShape(PxCapsuleGeometry(2, 1));
-		newSolid->attachShape(*newShape);
-		PxRigidBodyExt::updateMassAndInertia(*newSolid, 0.15);
-		gScene->addActor(*newSolid);
-
-		RenderItem* newItem = new RenderItem(newShape, newSolid, { 0, 0, 0, 1 });
-
-		RB* r2 = new RB(gPhysics, gScene, newItem, newSolid);
-		rigidBodySys->addRB(r2);
-		WindSFG* wind = new WindSFG(10, 0);
-		RBregistering->addRegistry(wind, r2);
-		break;
-	}
-	case 'X': { // Disparo RB con Angular velocity, material y mas masa, y viento
-		// Rigidbody dinamico
-		PxRigidDynamic* newSolid = gPhysics->createRigidDynamic(PxTransform({ GetCamera()->getEye() }));
-		newSolid->setLinearVelocity(GetCamera()->getDir() * 70);
-		newSolid->setAngularVelocity({ 0,10,0 });
-
-		//PxMaterial* gMaterial = gPhysics->createMaterial(Cestatico, Cdinamico, Elastico);
-		PxMaterial* gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
-
-		PxShape* newShape = CreateShape(PxCapsuleGeometry(2, 1), gMaterial);
-		newSolid->attachShape(*newShape);
-		PxRigidBodyExt::updateMassAndInertia(*newSolid, 1);
-		gScene->addActor(*newSolid);
-
-		
-		RenderItem* newItem = new RenderItem(newShape, newSolid, { 0, 0, 0, 1 });
-
-		RB* r2 = new RB(gPhysics, gScene, newItem, newSolid);
-		rigidBodySys->addRB(r2);
-		WindSFG* wind = new WindSFG(10, 0);
-		RBregistering->addRegistry(wind, r2);
-		break;
-	}
-	case 'B': { // Viento afecta a la particula del muelle estático
-		if (pMuelle != nullptr) {
-			ParticleDragGenerator* pdg = new ParticleDragGenerator(10, 0);
-			registering->addRegistry(pdg, pMuelle);
-		}
-		break;
-	}
-	case 'N': { // Resta variable K del muelle estático
-		if (as != nullptr) as->setK(as->getK() - 1);
-		break;
-	}
-	case 'M': { // Suma variable K del muelle estático
-		if (as != nullptr) as->setK(as->getK() + 1);
-		break;
-	}
 	default:
 		break;
 	}
