@@ -39,6 +39,11 @@ public:
 
 	Vector3 getDir();
 	Vector3 getPos();
+	PxRigidDynamic* getRB() { return dynamicRB; }
+
+	void setPos(physx::PxVec3 newPos);
+	void setDir(Vector3 newDir);
+	void setAngular(Vector3 newAng);
 
 	bool getDynamic();
 };

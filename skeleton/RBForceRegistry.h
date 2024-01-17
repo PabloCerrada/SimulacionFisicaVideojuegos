@@ -12,7 +12,5 @@ public:
 
 	void addRegistry(SolidForceGenerator* fg, RB* rb);
 
-	void deleteRegistry(SolidForceGenerator* fg, RB* rb);
-
-	void deleteParticleRegistry(RB* rb);
+	void deleteRBRegistry(RB* rb);
 };

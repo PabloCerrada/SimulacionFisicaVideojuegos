@@ -9,10 +9,15 @@ void RBForceRegistry::addRegistry(SolidForceGenerator* fg, RB* rb) {
     insert({ fg, rb });
 }
 
-void RBForceRegistry::deleteRegistry(SolidForceGenerator* fg, RB* rb) {
-    
-}
 
-void RBForceRegistry::deleteParticleRegistry(RB* rb) {
-    
+void RBForceRegistry::deleteRBRegistry(RB* rb) {
+	auto it = begin();
+	while (it != end()) {
+		if (it->second != rb) {
+			it++;
+		}
+		else {
+			it = this->erase(it);
+		}
+	}
 }

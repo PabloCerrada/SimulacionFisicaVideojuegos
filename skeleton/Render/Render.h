@@ -51,6 +51,10 @@ extern std::string display_text;
 
 extern std::string juguetes;
 extern std::string felicitacion;
+extern std::string espacio;
+extern std::string controles;
+extern std::string controles1;
+extern std::string controles2;
 
 namespace Snippets
 {

@@ -3,6 +3,7 @@ RigidBodySystem::RigidBodySystem(RBForceRegistry* registering_, PxPhysics* gPhys
 	registering = registering_;
 	gPhysics = gPhysics_;
 	gScene = gScene_;
+	wind = new WindSFG(0, 0, Vector3(1, 0, 0));
 }
 
 RigidBodySystem::~RigidBodySystem() {
@@ -11,7 +12,8 @@ RigidBodySystem::~RigidBodySystem() {
 		auto aux = it;
 		++aux;
 
-		registering->deleteParticleRegistry(*it);
+
+		registering->deleteRBRegistry(*it);
 		delete* it;
 		rbList.erase(it);
 
@@ -29,11 +31,22 @@ void RigidBodySystem::update(double t) {
 		auto aux = it;
 		++aux;
 
+		if ((*it) != gancho && (*it)->getDynamic() && !pegado) {
+			if (gancho->getRB()->getWorldBounds().intersects((*it)->getRB()->getWorldBounds())) {
+				pegado = true;
+				rbPegado = (*it);
+			}
+		}
+
 		if ((*it)->getDynamic() && (*it)->getPos().y < -50 && (*it)->getPos().x < -50 && (*it)->getPos().z > -355) {
 			victoria = true;
-			registering->deleteParticleRegistry(*it);
+			registering->deleteRBRegistry(*it);
 			delete* it;
 			rbList.erase(it);
+		}
+
+		if (pegado) {
+			rbPegado->setPos(gancho->getPos() + Vector3(0, -30, 0));
 		}
 
 		it = aux;
@@ -76,21 +89,52 @@ void RigidBodySystem::createStaticObject(Vector3 pos, int wx, int wy, int wz, Ve
 	
 }
 
-void RigidBodySystem::createDynamicObject(Vector3 pos, int wx, int wy, int wz, Vector4 color) {
-	PxRigidDynamic* newSolid = gPhysics->createRigidDynamic(PxTransform(pos));
-	newSolid->setLinearVelocity(PxVec3(0, -30, 0));
+RB* RigidBodySystem::createDynamicObject(Vector3 pos, int wx, int wy, int wz, Vector4 color, int id) { // id: 0 capsula, 1 gancho, 2 esfera, 3 Box
+	PxRigidDynamic* newSolid = gPhysics->createRigidDynamic(PxTransform(pos));  
+	newSolid->setLinearVelocity(PxVec3(0, 0, 0));
 	//newSolid->setAngularVelocity({ 0,10,0 });
-
+	
 	//PxMaterial* gMaterial = gPhysics->createMaterial(Cestatico, Cdinamico, Elastico);
-	//PxMaterial* gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
-
-	PxShape* newShape = CreateShape(PxCapsuleGeometry(wx, wy));
-	newSolid->attachShape(*newShape);
-	PxRigidBodyExt::updateMassAndInertia(*newSolid, 10);
+	PxMaterial* gMaterial = gPhysics->createMaterial(10, 0, 0);
+	PxShape* newShape;
+	switch (id)
+	{
+	case 0:
+		newShape = CreateShape(PxCapsuleGeometry(wx, wy), gMaterial);
+		newSolid->setMass(10);
+		newSolid->attachShape(*newShape);
+		PxRigidBodyExt::updateMassAndInertia(*newSolid, 0.001);
+		break;
+	case 1:
+		newShape = CreateShape(PxBoxGeometry(wx, wy, wz), gMaterial);
+		newSolid->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true); // Gravedad deshabilitada
+		newSolid->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true); // Al chocar no reacciona a las colisiones
+		newSolid->attachShape(*newShape);
+		PxRigidBodyExt::updateMassAndInertia(*newSolid, 0.001);
+		
+		break;
+	case 2:
+		newShape = CreateShape(PxSphereGeometry(wx), gMaterial);
+		newSolid->attachShape(*newShape);
+		newSolid->setMass(3);
+		PxRigidBodyExt::updateMassAndInertia(*newSolid, 0.001);
+		break;
+	case 3:
+		newShape = CreateShape(PxBoxGeometry(wx, wy, wz), gMaterial);
+		newSolid->setMass(15);
+		newSolid->attachShape(*newShape);
+		PxRigidBodyExt::updateMassAndInertia(*newSolid, 0.001);
+		break;
+	default:
+		break;
+	}
+	
 	gScene->addActor(*newSolid);
 	RenderItem* newItem = new RenderItem(newShape, newSolid, color);
-
-	addRB(new RB(gPhysics, gScene, newItem, newSolid, newShape));
+	RB* rb = new RB(gPhysics, gScene, newItem, newSolid, newShape);
+	addRB(rb);
+	registering->addRegistry(wind, rb);
+	return rb;
 }
 
 void RigidBodySystem::createStaticScenario() {
@@ -138,16 +182,16 @@ void RigidBodySystem::createStaticScenario() {
 }
 
 void RigidBodySystem::createDynamicScenario() {
-	createDynamicObject(Vector3(0, 0, -500), 20, 10, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 });
-	createDynamicObject(Vector3(-100, 0, -600), 20, 10, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 });
-	createDynamicObject(Vector3(-100, 0, -500), 20, 10, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 });
-	createDynamicObject(Vector3(-50, 0, -550), 20, 10, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 });
-	createDynamicObject(Vector3(0, 0, -600), 20, 10, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 });
-	createDynamicObject(Vector3(0, 0, -400), 20, 10, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 });
-	createDynamicObject(Vector3(100, 0, -600), 20, 10, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 });
-	createDynamicObject(Vector3(100, 0, -500), 20, 10, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 });
-	createDynamicObject(Vector3(100, 0, -400), 20, 10, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 });
-	createDynamicObject(Vector3(-100, 0, -400), 20, 10, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 });
+	createDynamicObject(Vector3(0, 0, -500), 20, 20, 20, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 }, 3);
+	createDynamicObject(Vector3(-100, 0, -600), 20, 10, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 }, 0);
+	createDynamicObject(Vector3(-100, 0, -500), 20, 10, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 }, 0);
+	createDynamicObject(Vector3(-50, 0, -550), 20, 10, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 }, 2);
+	createDynamicObject(Vector3(0, 0, -600), 20, 10, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 }, 0);
+	createDynamicObject(Vector3(0, 0, -400), 20, 15, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 }, 0);
+	createDynamicObject(Vector3(100, 0, -600), 20, 15, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 }, 0);
+	createDynamicObject(Vector3(100, 0, -500), 20, 20, 20, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 }, 3);
+	createDynamicObject(Vector3(100, 0, -400), 20, 20, 20, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 }, 3);
+	createDynamicObject(Vector3(50, 0, -450), 20, 0, 0, { nRandom(0, 100) / 100, nRandom(0, 100) / 100, nRandom(0, 100) / 100, 1 }, 2);
 }
 
 float RigidBodySystem::nRandom(int n1, int n2) {
@@ -156,4 +200,31 @@ float RigidBodySystem::nRandom(int n1, int n2) {
 
 	// Generar un número aleatorio dentro del rango
 	return std::rand() % rango + n1;
+}
+
+void RigidBodySystem::despegar() {
+	if (pegado) {
+		setPegado(false);
+		rbPegado->setDir(Vector3(0, -1, 0));
+		rbPegado->setAngular(Vector3(0));
+		rbPegado = nullptr;
+	}
+}
+
+void RigidBodySystem::setWind(float k1, float k2, Vector3 d) {
+	wind->setDrag(k1, k2);
+	wind->setD(d);
+
+	auto it = rbList.begin();
+	while (!rbList.empty() && it != rbList.end()) {
+		auto aux = it;
+		++aux;
+
+		if ((*it) != gancho && (*it) != anclaje && (*it) != rbPegado && (*it)->getDynamic() && k1 != 0) {
+			(*it)->setPos((*it)->getPos() + Vector3(0, 10, 0));
+		}
+
+
+		it = aux;
+	}
 }

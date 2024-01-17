@@ -263,6 +263,8 @@
     <ClCompile Include="GomaElastica.cpp" />
     <ClCompile Include="GravityForceGenerator.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MuelleAncladoRB.cpp" />
+    <ClCompile Include="MuelleRB.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ParticleDragGenerator.cpp" />
     <ClCompile Include="ParticleForceRegistry.cpp" />
@@ -292,6 +294,8 @@
     <ClInclude Include="GaussianParticleGenerator.h" />
     <ClInclude Include="GomaElastica.h" />
     <ClInclude Include="GravityForceGenerator.h" />
+    <ClInclude Include="MuelleAncladoRB.h" />
+    <ClInclude Include="MuelleRB.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleDragGenerator.h" />
     <ClInclude Include="ParticleForceRegistry.h" />

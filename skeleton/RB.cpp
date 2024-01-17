@@ -19,18 +19,31 @@ RB::RB(PxPhysics* gPhysics_, PxScene* gScene_, RenderItem* rItem_, PxRigidStatic
 
 RB::~RB()
 {
-	if (!dynamic) {
-		gSceneRB->removeActor(*staticRB);
-		(staticRB)->detachShape(*shape);
-		(rItem)->release();
-		(staticRB)->release();
+	// Consegui eliminar correctamente los rigidbody pero no se que toque y llego un momento que no funcionaba
+	// No he conseguido eliminar correctamente los rigidbodys de escena y he hecho este apaño para que se juegue bien
+	if (dynamic) {
+		dynamicRB->setGlobalPose(PxTransform(0, -2000, 0));
 	}
-	else if (dynamic) {
-		gSceneRB->removeActor(*dynamicRB);
-		(dynamicRB)->detachShape(*shape);
-		(rItem)->release();
-		(dynamicRB)->release();
-	}
+	//if (!dynamic) {
+	//	/*gSceneRB->removeActor(*staticRB);
+	//	(staticRB)->detachShape(*shape);
+	//	(rItem)->release();
+	//	(staticRB)->release();*/
+	//	//rItem = nullptr;
+	//	//DeregisterRenderItem(rItem);
+	//	//shape->release();
+	//	//(staticRB)->release();
+	//}
+	//else if (dynamic) {
+	//	/*gSceneRB->removeActor(*dynamicRB);
+	//	(dynamicRB)->detachShape(*shape);
+	//	(rItem)->release();
+	//	(dynamicRB)->release();*/
+	//	//rItem = nullptr;
+	//	//DeregisterRenderItem(rItem);
+	//	//shape->release();
+	//	//(dynamicRB)->release();
+	//}
 }
 
 void RB::integrate(double t) {
@@ -71,4 +84,23 @@ Vector3 RB::getPos() {
 
 bool RB::getDynamic() {
 	return dynamic;
+}
+
+void RB::setPos(Vector3 newPos)
+{
+	if (dynamic) {
+		dynamicRB->setGlobalPose(PxTransform(newPos));
+	}
+}
+
+void RB::setDir(Vector3 newDir) {
+	if (dynamic) {
+		dynamicRB->setLinearVelocity(newDir);
+	}
+}
+
+void RB::setAngular(Vector3 newAng) {
+	if (dynamic) {
+		dynamicRB->setAngularVelocity(newAng);
+	}
 }

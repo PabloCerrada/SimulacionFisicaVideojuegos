@@ -32,6 +32,8 @@
     <ClCompile Include="RB.cpp" />
     <ClCompile Include="SolidForceGenerator.cpp" />
     <ClCompile Include="WindSFG.cpp" />
+    <ClCompile Include="MuelleAncladoRB.cpp" />
+    <ClCompile Include="MuelleRB.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -65,6 +67,8 @@
     <ClInclude Include="RB.h" />
     <ClInclude Include="SolidForceGenerator.h" />
     <ClInclude Include="WindSFG.h" />
+    <ClInclude Include="MuelleAncladoRB.h" />
+    <ClInclude Include="MuelleRB.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

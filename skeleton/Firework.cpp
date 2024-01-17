@@ -1,6 +1,6 @@
 #include "Firework.h"
 Firework::Firework(ParticleSystem* pS, const physx::PxVec3& pos, const physx::PxVec3& dir, const physx::PxVec3& acel, float masa_, float tam_, Vector4 color, int id_, ParticleForceRegistry* registering_) : Particle(pS, pos, dir, acel, masa_, tam_, color) {
-	timeToExplode = 1;
+	timeToExplode = 0.01;
 	id = id_;
 	registering = registering_;
 }

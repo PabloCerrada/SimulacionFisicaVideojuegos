@@ -1,7 +1,8 @@
 #include "WindSFG.h"
-WindSFG::WindSFG(const float k1_, const float k2_) {
+WindSFG::WindSFG(const float k1_, const float k2_, Vector3 d_) {
 	k1 = k1_;
 	k2 = k2_;
+	d = d_;
 	mTrans = new PxTransform(PxVec3(20, 10, 0));
 	width = PxBoxGeometry(40, 10, 10);
 	//renderItem = new RenderItem(CreateShape(width), mTrans, Vector4(1, 0, 0, 1));
@@ -18,7 +19,7 @@ void WindSFG::updateForce(RB* rb, double t) {
 	float drag_coef = dir.normalize();
 	Vector3 dragF;
 	drag_coef = k1 * drag_coef + k2 * drag_coef * drag_coef;
-	dragF = dir + Vector3(0, 1, 0) * drag_coef;
+	dragF = dir + d * drag_coef;
 	rb->addForce(dragF);
 	
 	// Si queremos un viento que vaya SIEMPRE en contra de la direccioon de la particula
